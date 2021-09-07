@@ -398,6 +398,7 @@ namespace Reversi
                     }
                     else
                     {
+                        
                         nodeScore = MinimaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), true);
                         if (nodeScore < bestScore)
                         {
