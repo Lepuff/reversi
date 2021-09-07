@@ -1,5 +1,8 @@
 ﻿namespace FSAI
 
+
+
+
 module Minimax =
 
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
@@ -21,5 +24,13 @@ module Evaluation =
 
 module Moves = 
     
+    let IsOnBoard x y =
+        0 <= x && x <=7 && 0 <= 7 && y <= 7;
+
+
+
     let GetValidMoves board tile =
         0
+
+
+        
