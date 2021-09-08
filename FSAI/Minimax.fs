@@ -18,9 +18,6 @@ module Minimax =
         0
 
 
-    let GetWinner board = 
-        0
-
     let Evaluation board =
         0
 
@@ -46,12 +43,6 @@ module Minimax =
         else
             byte 99 //error
 
-
-        
-            
-            
-            
-            
 
     let rec validDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
         if IsOnBoard x y && board.[x,y] = OtherTile tile then
@@ -85,17 +76,14 @@ module Minimax =
         output
 
 
-            
-                
-                
-    
+
     let GetWinner (board : byte[,]) = 
         let blackScore = GetScore board black
         let whiteScore = GetScore board white
         if whiteScore = 0 || 
             blackScore = 0 || 
             blackScore+whiteScore = 64 || 
-            GetValidMoves board white + GetValidMoves board black = 0 then
+            List.length(GetValidMoves board white) + List.length(GetValidMoves board black) = 0 then
             if whiteScore > blackScore then white 
             elif blackScore > whiteScore then black 
             else tie
