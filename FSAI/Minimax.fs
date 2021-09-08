@@ -4,17 +4,21 @@
 
 
 module Minimax =
-
-    let empty = byte 0
-    let white = byte 1
-    let black = byte 2
-    let valid = byte 3
-    let tie = byte 4
+    let boardSize = byte 8
+    let empty = byte  0
+    let white = byte  1
+    let black = byte  2
+    let valid = byte  3
+    let tie =  byte 4
+    let dirs = [(-1,1) ;(0,1) ;(1,1)
+                (-1,0) ;       (1,0)
+                (-1,-1);(0,-1);(1,-1)]
 
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
         0
 
-    let GetValidMoves board tile =
+
+    let GetWinner board = 
         0
 
     let Evaluation board =
@@ -41,6 +45,49 @@ module Minimax =
             black
         else
             byte 99 //error
+
+
+        
+            
+            
+            
+            
+
+    let rec validDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
+        if IsOnBoard x y && board.[x,y] = OtherTile tile then
+             validDir board x y dir tile
+        elif board.[x,y] = tile then
+            true
+        else
+            false
+
+    let rec loopDirs (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
+        match dirList with
+        |[] -> false
+        |head::tail ->
+            if validDir board x y head tile then
+                true
+            else 
+                loopDirs board x y tail tile  
+
+     
+    let ValidMove (board:byte[,]) (x:int) (y:int) (tile:byte) =
+        if board.[x,y] = empty then
+            loopDirs board x y dirs tile
+        else
+            false
+            
+       
+    let GetValidMoves (board :byte[,]) (tile: byte) =
+        let output = [
+            for X in 0..7 do 
+                for Y in 0..7 do if (ValidMove board X Y tile) = true then  yield (X,Y)]
+        output
+
+
+            
+                
+                
     
     let GetWinner (board : byte[,]) = 
         let blackScore = GetScore board black
