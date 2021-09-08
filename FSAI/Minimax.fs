@@ -5,24 +5,23 @@
 
 module Minimax =
 
-    let empty = 0
-    let white = 1
-    let black = 2
-    let valid = 3
-    let tie = 4
+    let empty = byte 0
+    let white = byte 1
+    let black = byte 2
+    let valid = byte 3
+    let tie = byte 4
 
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
         0
 
-
-    let GetWinner board = 
+    let GetValidMoves board tile =
         0
 
     let Evaluation board =
         0
 
-    let GetScore (board : int[,]) (tile : int) =
-        Seq.cast<int> board 
+    let GetScore (board : byte[,]) (tile : byte) =
+        Seq.cast<byte> board 
         |> Seq.filter (fun cell -> cell = tile)
         |> Seq.length
 
@@ -35,5 +34,17 @@ module Minimax =
         else if tile = white then
             black
         else
-            99 //error
+            byte 99 //error
+    
+    let GetWinner (board : byte[,]) = 
+        let blackScore = GetScore board black
+        let whiteScore = GetScore board white
+        if whiteScore = 0 || 
+            blackScore = 0 || 
+            blackScore+whiteScore = 64 || 
+            GetValidMoves board white + GetValidMoves board black = 0 then
+            if whiteScore > blackScore then white 
+            elif blackScore > whiteScore then black 
+            else tie
+        else byte 99 //error
                
