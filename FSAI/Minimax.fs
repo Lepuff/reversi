@@ -20,6 +20,12 @@ module Minimax =
     let Evaluation board =
         0
 
+    let CountCorners (board : byte[,]) (tile : byte) = 
+        let corners = [(board.[0,0]);(board.[0,7]);(board.[7,0]);(board.[7,7])]
+        List.filter (fun corner -> corner = tile) corners
+        |> List.length
+            
+    
     let GetScore (board : byte[,]) (tile : byte) =
         Seq.cast<byte> board 
         |> Seq.filter (fun cell -> cell = tile)
