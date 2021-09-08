@@ -46,7 +46,8 @@ module Minimax =
 
     let rec validDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
         if IsOnBoard x y && board.[x,y] = OtherTile tile then
-             validDir board x y dir tile
+             let xDir, yDir = dir
+             validDir board (x+xDir) (y+yDir) dir tile
         elif board.[x,y] = tile then
             true
         else
