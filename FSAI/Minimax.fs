@@ -5,12 +5,15 @@
 
 module Minimax =
 
+    let empty = 0
+    let white = 1
+    let black = 2
+    let valid = 3
+    let tie = 4
+
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
         0
 
-
-    
-module Evaluation =
 
     let GetWinner board = 
         0
@@ -23,16 +26,14 @@ module Evaluation =
         |> Seq.filter (fun cell -> cell = tile)
         |> Seq.length
 
-
-module Moves = 
-    
     let IsOnBoard x y =
         0 <= x && x <=7 && 0 <= 7 && y <= 7;
 
-
-
-    let GetValidMoves board tile =
-        0
-
-
-        
+    let OtherTile tile =
+        if tile = black then
+            white
+        else if tile = white then
+            black
+        else
+            99 //error
+               
