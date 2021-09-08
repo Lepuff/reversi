@@ -4,7 +4,7 @@
 
 
 module Minimax =
-    let boardSize = byte 8
+    let boardSize = int 8
     let empty = byte  0
     let white = byte  1
     let black = byte  2
@@ -18,8 +18,8 @@ module Minimax =
         0
 
 
-    let Evaluation board =
-        0
+
+        
 
     let CountCorners (board : byte[,]) (tile : byte) = 
         let corners = [(board.[0,0]);(board.[0,7]);(board.[7,0]);(board.[7,7])]
@@ -89,4 +89,35 @@ module Minimax =
             elif blackScore > whiteScore then black 
             else tie
         else byte 99 //error
-               
+              
+    let Evaluation (board:byte[,]) =
+        let blackScore = GetScore board black
+        let whiteScore = GetScore board white
+        let blackMobility = (GetValidMoves board black).Length
+        let whiteMobility = (GetValidMoves board white).Length
+
+        if blackScore = 0 then
+            -200000
+        elif whiteScore = 0 then
+            200000
+        else
+
+        if blackScore + whiteScore = (boardSize * boardSize) || blackMobility + whiteMobility = 0 then 
+            if (blackScore < whiteScore) then
+                -100000 - whiteScore + blackScore
+            elif (blackScore > whiteScore) then
+                100000 + blackScore - whiteScore
+            else
+                0
+            
+        else
+        if blackScore + whiteScore > 55 then
+            (blackScore - whiteScore)
+        else
+        let evaluation  = blackScore  -  whiteScore    
+        let evaluation1 = evaluation  + (blackMobility - whiteMobility) * 10
+        let evaluation2 = evaluation1 + ((CountCorners board black) - (CountCorners board white)) *100
+        evaluation2
+            
+        
+
