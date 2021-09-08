@@ -118,6 +118,14 @@ module Minimax =
         let evaluation1 = evaluation  + (blackMobility - whiteMobility) * 10
         let evaluation2 = evaluation1 + ((CountCorners board black) - (CountCorners board white)) *100
         evaluation2
-            
+
+    let GetFlippedPeices (board:byte[,]) (move:(int*int)) (tile:byte) =
+        [(1,1)]
+
+      
+      
+    let MakeMove (board:byte[,]) (move:(int*int)) (tile:byte) =
+        board
+        
         
 
