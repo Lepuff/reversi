@@ -288,11 +288,11 @@ namespace Reversi
         {
             try // try catch clause because this raises nullreference error on first call.
             {
-                if (Player1Mode.SelectedIndex == 0)
+                if (Player1Mode.SelectedIndex == 0 || Player1Mode.SelectedIndex == -1) //the default value is always of comboboxes is -1
                 {
                     player1.Mode = Player.Modes.Human;
                 }
-                if (Player2Mode.SelectedIndex == 0)
+                if (Player2Mode.SelectedIndex == 0 || Player2Mode.SelectedIndex == -1) //the default value is always of comboboxes is -1
                 {
                     player2.Mode = Player.Modes.Human;
                 }

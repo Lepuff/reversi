@@ -292,7 +292,7 @@ namespace Reversi
             }
             if (blackScore + whiteScore == 64 || blackMobility + whiteMobility == 0)
             {
-                if (Black < whiteScore)
+                if (blackScore < whiteScore)
                 {
                     return -100000 - whiteScore + blackScore;
                 }
