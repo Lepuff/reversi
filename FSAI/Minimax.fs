@@ -11,7 +11,7 @@ module Minimax =
     let black = byte  2
     let valid = byte  3
     let tie =  byte 4
-    //directions
+    // Directions
     let dirs = [(-1,1) ;(0,1) ;(1,1)
                 (-1,0) ;       (1,0)
                 (-1,-1);(0,-1);(1,-1)]
@@ -39,8 +39,8 @@ module Minimax =
         else
             byte 99 //error
 
-    //This function follows a direction on the board and checks if the direction is part of a valid move
-    //returns true if that is the case
+    // This function follows a direction on the board and checks if the direction is part of a valid move
+    // returns true if that is the case
     let rec validDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
         if IsOnBoard x y && board.[x,y] = OtherTile tile then
              let xDir, yDir = dir
@@ -50,7 +50,7 @@ module Minimax =
         else
             false
 
-    //This function loops trought all the directions and returns true if a valid direction is found
+    // This function loops trought all the directions and returns true if a valid direction is found
     let rec loopDirs (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
         match dirList with
         |[] -> false
@@ -61,7 +61,7 @@ module Minimax =
             else 
                 loopDirs board x y tail tile  
 
-    //Checks if a move is valid, firstly by checking if the position is empty and secondly if the position will flip pieces 
+    // Checks if a move is valid, firstly by checking if the position is empty and secondly if the position will flip pieces 
     let ValidMove (board:byte[,]) (x:int) (y:int) (tile:byte) =
         if board.[x,y] = empty then
             loopDirs board x y dirs tile
@@ -120,8 +120,8 @@ module Minimax =
         let evaluation2 = evaluation1 + ((CountCorners board black) - (CountCorners board white)) *100
         evaluation2
     
-    //Loops a specific direction until a tile of the players color is found,
-    //returns a list of positions of the opposite players tiles that should be turned
+    // Loops a specific direction until a tile of the players color is found,
+    // returns a list of positions of the opposite players tiles that should be turned
     let rec GetFlippedDirPieces (board:byte[,]) (pos:(int*int)) (dir:(int*int)) (tile:byte) =
         let posX,posY = pos
         let dirX,dirY = dir
@@ -132,30 +132,38 @@ module Minimax =
         else
             []
 
-    //Loop trought the list if directions and check if they are valid directions, 
-    //if they are return a list of tiles that should be flipped
+    // Loop trought the list if directions and check if they are valid directions, 
+    // if they are return a list of tiles that should be flipped
     let rec LoopDirsForFlippedPieces (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
         match dirList with
         |[] -> []
         |head::tail ->
             let dirX,dirY = head
-            if validDir board (x+dirX) (y+dirY) head tile then //if direction is a valid dir, add it to the list
+            // if direction is a valid dir, add it to the list
+            if validDir board (x+dirX) (y+dirY) head tile then 
                 let flippedPeicesList = GetFlippedDirPieces board (x+dirX,y+dirY) (dirX,dirY) tile
                 flippedPeicesList@(LoopDirsForFlippedPieces board x y tail tile)
             else 
-                []@LoopDirsForFlippedPieces board x y tail tile //skip adding this direction
+                // skip adding this direction
+                []@LoopDirsForFlippedPieces board x y tail tile
 
-    //Top level function to encapsulate the the recursive looping
-    let GetFlippedPeices (board:byte[,]) (move:(int*int)) (tile:byte) =
+    // Top level function to encapsulate the the recursive looping
+    let GetFlippedPieces (board:byte[,]) (move:(int*int)) (tile:byte) =
         let moveX, moveY = move
         if board.[moveX,moveY] = empty then
-            LoopDirsForFlippedPieces board moveX moveY dirs tile //get all flipped pieces in all directions
+            // Get all flipped pieces in all directions
+            LoopDirsForFlippedPieces board moveX moveY dirs tile 
         else
             []
-      
+    
+    // Change the colors of the positions to own tile color, as well as
+    // the clicked square
     let MakeMove (board:byte[,]) (move:(int*int)) (tile:byte) =
-        board
-        
-        
+        let flippedPiecesList = GetFlippedPieces board move tile
+        for flippedPiece in flippedPiecesList do
+            board.[fst flippedPiece, snd flippedPiece] <- tile
+        if not flippedPiecesList.IsEmpty then
+            board.[fst move, snd move] <- tile
+
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
         0
