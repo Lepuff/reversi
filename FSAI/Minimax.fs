@@ -164,6 +164,31 @@ module Minimax =
             board.[fst flippedPiece, snd flippedPiece] <- tile
         if not flippedPiecesList.IsEmpty then
             board.[fst move, snd move] <- tile
+   
+    let rec MiniMaxAlphaBeta board depth a b tile isMaxPlayer =
+        if depth = 0 || GetWinner board <> empty then
+            Evaluation board
 
-    let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
-        0
+        let bestScore =
+            match isMaxPlayer with
+            | true -> System.Int32.MinValue
+            | false -> System.Int32.MaxValue
+        let validMoves = GetValidMoves board tile
+        if not validMoves.IsEmpty then
+            for move in validMoves do
+                let childBoard = Array2D.copy board
+                MakeMove childBoard move tile
+                let nodeScore = MiniMaxAlphaBeta childBoard (depth-1) a b (OtherTile tile) (not isMaxPlayer)
+                if isMaxPlayer then
+                    let newBestScore = max bestScore nodeScore
+                    let a1 = max newBestScore a
+                    
+                else 
+                    let newBestScore = min bestScore nodeScore
+                    let b1 = min newBestScore b
+                    
+                if b <= a then
+                    
+        else 
+                MiniMaxAlphaBeta board depth a b (OtherTile tile) (not isMaxPlayer) 
+                
