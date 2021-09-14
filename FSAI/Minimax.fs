@@ -4,7 +4,7 @@
 
 
 module Minimax =
-    
+    open System
     let boardSize = int 8
     let empty = byte  0
     let white = byte  1
@@ -29,7 +29,7 @@ module Minimax =
         |> Seq.length
 
     let IsOnBoard x y =
-        0 <= x && x <=7 && 0 <= 7 && y <= 7;
+        0 <= x && x <=7 && 0 <= y && y <= 7;
 
     let OtherTile tile =
         if tile = black then
@@ -42,11 +42,14 @@ module Minimax =
     // This function follows a direction on the board and checks if the direction is part of a valid move
     // returns true if that is the case
     let rec validDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
-        if IsOnBoard x y && board.[x,y] = OtherTile tile then
-             let xDir, yDir = dir
-             validDir board (x+xDir) (y+yDir) dir tile
-        elif board.[x,y] = tile then
-            true
+        if IsOnBoard x y then
+            if board.[x,y] = OtherTile tile then
+                 let xDir, yDir = dir
+                 validDir board (x+xDir) (y+yDir) dir tile
+            elif board.[x,y] = tile then
+                true
+            else
+                false
         else
             false
 
@@ -171,3 +174,63 @@ module Minimax =
 
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
         0
+            board.[fst move, snd move] <- tile
+            board
+        else
+            board
+
+
+
+
+
+            
+         
+
+        
+
+
+
+
+
+    let rec MinMaxAlphaBeta board depth a b tile isMaxPLayer =
+        
+        let rec LoopMoves (board:byte[,]) (validMoves:(int*int)list) (tile:byte) (isMaxPlayer:bool) (bestScore:int)  (alpha:int) (beta:int) =
+            match validMoves with
+            | [] -> bestScore
+            | head::tail -> 
+                let childBoard = Array2D.copy board
+                let newBoard = MakeMove childBoard head tile
+                let nodeScore = MinMaxAlphaBeta newBoard (depth-1) alpha beta (OtherTile tile) (not isMaxPlayer)
+                if isMaxPlayer then
+                    let bs = max bestScore nodeScore
+                    let newAlpha = max bestScore alpha
+                    if beta <= newAlpha then
+                        bs
+                    else
+                       (LoopMoves board tail tile isMaxPlayer bs newAlpha beta)
+
+                else
+                    let bs = min bestScore nodeScore
+                    let newBeta = min bestScore beta
+     
+                    if newBeta <= alpha then
+                        bs
+                    else
+                       (LoopMoves board tail tile isMaxPlayer bs alpha newBeta)
+
+                
+        if depth = 0 || (GetWinner board  <> empty) then
+            Evaluation board
+        else
+        let bestScore = match isMaxPLayer with
+                        | true -> System.Int32.MinValue
+                        | false -> System.Int32.MaxValue
+        let validMoves = GetValidMoves board tile
+
+        if validMoves.IsEmpty then
+            MinMaxAlphaBeta board depth a b (OtherTile tile) (not isMaxPLayer)
+        else
+            (LoopMoves board validMoves tile isMaxPLayer bestScore a b)
+
+
+        

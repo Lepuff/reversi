@@ -314,7 +314,7 @@ namespace Reversi
             evaluation += (CountCorners(board, Black) - CountCorners(board, White)) * 100;
             return evaluation;
         }
-
+/*
         public static int MinimaxAlphaBeta(byte[,] board, int depth, int a, int b, byte tile, bool isMaxPlayer)
         {
             // The heart of our AI. Minimax algorithm with alpha-beta pruning to speed up computation.
@@ -356,7 +356,7 @@ namespace Reversi
             }
             return bestScore;
         }
-
+*/
         public static Tuple<int, int> GetAIMove(byte[,] board, int depth, byte tile)
         {
             // The "convienence" function that allows us to use our AI algorithm.
@@ -389,7 +389,8 @@ namespace Reversi
                     int nodeScore;
                     if (tile == Black)
                     {
-                        nodeScore = MinimaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), false);
+                        //nodeScore = MinimaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), false);
+                        nodeScore = FSAI.Minimax.MinMaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), false);
                         if (nodeScore > bestScore)
                         {
                             bestScore = nodeScore;
@@ -398,8 +399,9 @@ namespace Reversi
                     }
                     else
                     {
-                        
-                        nodeScore = MinimaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), true);
+
+                        //nodeScore = MinimaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), true);
+                        nodeScore = FSAI.Minimax.MinMaxAlphaBeta(childBoard, depth - 1, int.MinValue, int.MaxValue, OtherTile(tile), true);
                         if (nodeScore < bestScore)
                         {
                             bestScore = nodeScore;
