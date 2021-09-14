@@ -160,10 +160,14 @@ module Minimax =
     // the clicked square
     let MakeMove (board:byte[,]) (move:(int*int)) (tile:byte) =
         let flippedPiecesList = GetFlippedPieces board move tile
+        let newBoard = Array2D.copy board
         for flippedPiece in flippedPiecesList do
-            board.[fst flippedPiece, snd flippedPiece] <- tile
+            newBoard.[fst flippedPiece, snd flippedPiece] <- tile
         if not flippedPiecesList.IsEmpty then
-            board.[fst move, snd move] <- tile
+            newBoard.[fst move, snd move] <- tile
+            newBoard
+        else
+            newBoard
 
     let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
         0
