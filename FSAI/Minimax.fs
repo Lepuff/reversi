@@ -183,8 +183,8 @@ module Minimax =
             match validMoves with
             | [] -> bestScore
             | head::tail -> 
-                let childBoard = Array2D.copy board
-                let newBoard = MakeMove childBoard head tile
+                
+                let newBoard = MakeMove board head tile
                 let nodeScore = MinMaxAlphaBeta newBoard (depth-1) alpha beta (OtherTile tile) (not isMaxPlayer)
                 if isMaxPlayer then
                     let bs = max bestScore nodeScore
