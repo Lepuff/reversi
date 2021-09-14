@@ -172,21 +172,6 @@ module Minimax =
         else
             newBoard
 
-    let MinMaxAlphaBeta board depth a b tile isMaxPLayer =
-        0
-            board.[fst move, snd move] <- tile
-            board
-        else
-            board
-
-
-
-
-
-            
-         
-
-        
 
 
 
