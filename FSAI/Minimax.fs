@@ -41,11 +41,11 @@ module Minimax =
 
     // This function follows a direction on the board and checks if the direction is part of a valid move
     // returns true if that is the case
-    let rec validDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
+    let rec ValidDir (board:byte[,]) (x:int) (y:int) (dir:(int * int)) (tile:byte) =
         if IsOnBoard x y then
             if board.[x,y] = OtherTile tile then
                  let xDir, yDir = dir
-                 validDir board (x+xDir) (y+yDir) dir tile
+                 ValidDir board (x+xDir) (y+yDir) dir tile
             elif board.[x,y] = tile then
                 true
             else
@@ -54,20 +54,20 @@ module Minimax =
             false
 
     // This function loops trought all the directions and returns true if a valid direction is found
-    let rec loopDirs (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
+    let rec LoopDirs (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
         match dirList with
         |[] -> false
         |head::tail ->
             let dirX,dirY = head
-            if validDir board (x+dirX) (y+dirY) head tile then
+            if ValidDir board (x+dirX) (y+dirY) head tile then
                 true
             else 
-                loopDirs board x y tail tile  
+                LoopDirs board x y tail tile  
 
     // Checks if a move is valid, firstly by checking if the position is empty and secondly if the position will flip pieces 
     let ValidMove (board:byte[,]) (x:int) (y:int) (tile:byte) =
         if board.[x,y] = empty then
-            loopDirs board x y dirs tile
+            LoopDirs board x y dirs tile
         else
             false
             
@@ -143,7 +143,7 @@ module Minimax =
         |head::tail ->
             let dirX,dirY = head
             // if direction is a valid dir, add it to the list
-            if validDir board (x+dirX) (y+dirY) head tile then 
+            if ValidDir board (x+dirX) (y+dirY) head tile then 
                 let flippedPeicesList = GetFlippedDirPieces board (x+dirX,y+dirY) (dirX,dirY) tile
                 flippedPeicesList@(LoopDirsForFlippedPieces board x y tail tile)
             else 
@@ -177,7 +177,7 @@ module Minimax =
 
 
 
-    let rec MinMaxAlphaBeta board depth a b tile isMaxPLayer =
+    let rec MinMaxAlphaBeta board depth alpha beta tile isMaxPLayer =
         
         let rec LoopMoves (board:byte[,]) (validMoves:(int*int)list) (tile:byte) (isMaxPlayer:bool) (bestScore:int)  (alpha:int) (beta:int) =
             match validMoves with
@@ -187,12 +187,12 @@ module Minimax =
                 let newBoard = MakeMove board head tile
                 let nodeScore = MinMaxAlphaBeta newBoard (depth-1) alpha beta (OtherTile tile) (not isMaxPlayer)
                 if isMaxPlayer then
-                    let bs = max bestScore nodeScore
+                    let newBestScore = max bestScore nodeScore
                     let newAlpha = max bestScore alpha
                     if beta <= newAlpha then
-                        bs
+                        newBestScore
                     else
-                       (LoopMoves board tail tile isMaxPlayer bs newAlpha beta)
+                       (LoopMoves board tail tile isMaxPlayer newBestScore newAlpha beta)
 
                 else
                     let bs = min bestScore nodeScore
@@ -205,7 +205,7 @@ module Minimax =
 
                 
         if depth = 0 || (GetWinner board  <> empty) then
-            Evaluation board
+            (Evaluation board)
         else
         let bestScore = match isMaxPLayer with
                         | true -> System.Int32.MinValue
@@ -213,9 +213,9 @@ module Minimax =
         let validMoves = GetValidMoves board tile
 
         if validMoves.IsEmpty then
-            MinMaxAlphaBeta board depth a b (OtherTile tile) (not isMaxPLayer)
+            (MinMaxAlphaBeta board depth alpha beta (OtherTile tile) (not isMaxPLayer))
         else
-            (LoopMoves board validMoves tile isMaxPLayer bestScore a b)
+            (LoopMoves board validMoves tile isMaxPLayer bestScore alpha beta)
 
 
         
