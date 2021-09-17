@@ -176,10 +176,6 @@ module Minimax =
         else
             newBoard
 
-
-
-
-
     // The Minimax algorithm with alpha beta pruning. 
     let rec MinMaxAlphaBeta board depth alpha beta tile isMaxPLayer =
         
