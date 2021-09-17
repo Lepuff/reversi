@@ -5,6 +5,7 @@
 
 module Minimax =
     open System
+    // Constants
     let boardSize = int 8
     let empty = byte  0
     let white = byte  1
@@ -16,21 +17,23 @@ module Minimax =
                 (-1,0) ;       (1,0)
                 (-1,-1);(0,-1);(1,-1)]
 
-
+    // Count the number of tiles a player has in the corners
     let CountCorners (board : byte[,]) (tile : byte) = 
         let corners = [(board.[0,0]);(board.[0,7]);(board.[7,0]);(board.[7,7])]
         List.filter (fun corner -> corner = tile) corners
         |> List.length
             
-    
+    // Count the number of tiles a player has, one tile -> one point
     let GetScore (board : byte[,]) (tile : byte) =
         Seq.cast<byte> board 
         |> Seq.filter (fun cell -> cell = tile)
         |> Seq.length
 
+    // Check that x and y are within the bounds of the board
     let IsOnBoard x y =
         0 <= x && x <=7 && 0 <= y && y <= 7;
 
+    // Return the tile of the other player
     let OtherTile tile =
         if tile = black then
             white
@@ -53,7 +56,7 @@ module Minimax =
         else
             false
 
-    // This function loops trought all the directions and returns true if a valid direction is found
+    // This function loops through all the directions and returns true if a valid direction is found
     let rec LoopDirs (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
         match dirList with
         |[] -> false
@@ -79,13 +82,14 @@ module Minimax =
         output
 
 
-
+    // If a player has 0 tiles on the board, or if all tiles on the board are occupied, or if neither player
+    // has any valid moves left -> return the winner, or tie
     let GetWinner (board : byte[,]) = 
         let blackScore = GetScore board black
         let whiteScore = GetScore board white
         if whiteScore = 0 || 
             blackScore = 0 || 
-            blackScore+whiteScore = 64 || 
+            blackScore+whiteScore = (boardSize * boardSize) || 
             List.length(GetValidMoves board white) + List.length(GetValidMoves board black) = 0 then
             if whiteScore > blackScore then white 
             elif blackScore > whiteScore then black 
@@ -93,7 +97,7 @@ module Minimax =
         else byte 99 //error
             
             
-    //Evaluation function
+    // Evaluate how good a certain board is, relative to the black player
     let Evaluation (board:byte[,]) =
         let blackScore = GetScore board black
         let whiteScore = GetScore board white
@@ -120,7 +124,7 @@ module Minimax =
         else
         let evaluation  = blackScore  -  whiteScore    
         let evaluation1 = evaluation  + (blackMobility - whiteMobility) * 10
-        let evaluation2 = evaluation1 + ((CountCorners board black) - (CountCorners board white)) *100
+        let evaluation2 = evaluation1 + ((CountCorners board black) - (CountCorners board white)) * 100
         evaluation2
     
     // Loops a specific direction until a tile of the players color is found,
@@ -135,8 +139,8 @@ module Minimax =
         else
             []
 
-    // Loop trought the list if directions and check if they are valid directions, 
-    // if they are return a list of tiles that should be flipped
+    // Loop through the list of directions and check if they are valid directions. 
+    // if they are, return a list of tiles that should be flipped
     let rec LoopDirsForFlippedPieces (board:byte[,]) (x:int) (y:int) (dirList: (int* int) list) (tile:byte) =
         match dirList with
         |[] -> []
@@ -176,9 +180,10 @@ module Minimax =
 
 
 
-
+    // The Minimax algorithm with alpha beta pruning. 
     let rec MinMaxAlphaBeta board depth alpha beta tile isMaxPLayer =
         
+        // A nested function for handling the alpha beta pruning
         let rec LoopMoves (board:byte[,]) (validMoves:(int*int)list) (tile:byte) (isMaxPlayer:bool) (bestScore:int)  (alpha:int) (beta:int) =
             match validMoves with
             | [] -> bestScore
@@ -195,15 +200,14 @@ module Minimax =
                        (LoopMoves board tail tile isMaxPlayer newBestScore newAlpha beta)
 
                 else
-                    let bs = min bestScore nodeScore
+                    let newBestScore = min bestScore nodeScore
                     let newBeta = min bestScore beta
      
                     if newBeta <= alpha then
-                        bs
+                        newBestScore
                     else
-                       (LoopMoves board tail tile isMaxPlayer bs alpha newBeta)
-
-                
+                       (LoopMoves board tail tile isMaxPlayer newBestScore alpha newBeta)
+        // Base case, check if depth is 0 or if there has been a winner
         if depth = 0 || (GetWinner board  <> empty) then
             (Evaluation board)
         else
@@ -211,9 +215,11 @@ module Minimax =
                         | true -> System.Int32.MinValue
                         | false -> System.Int32.MaxValue
         let validMoves = GetValidMoves board tile
-
+        // If a player has no valid moves, continue MinMaxAlphaBeta-function 
+        // with the next player
         if validMoves.IsEmpty then
             (MinMaxAlphaBeta board depth alpha beta (OtherTile tile) (not isMaxPLayer))
+        // Else loop through the validMoves
         else
             (LoopMoves board validMoves tile isMaxPLayer bestScore alpha beta)
 
